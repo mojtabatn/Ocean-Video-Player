@@ -63,13 +63,16 @@ let encoderPromise: Promise<H264Encoder | null> | null = null;
 /** First H.264 encoder that actually works on this machine (GPU drivers vary). */
 export function h264Encoder() {
   encoderPromise ??= (async () => {
+    // FFmpeg's very first start can be slow (macOS checking a new program, Rosetta translating an Intel build):
+    // start it once on its own, so the timed tests below measure the encoders and not that.
+    await run(FFMPEG, ['-hide_banner', '-version'], { timeout: 120000 }).catch(() => {});
     for (const enc of ENCODERS) {
       try {
         await run(
           FFMPEG,
           ['-hide_banner', '-loglevel', 'error', '-f', 'lavfi', '-i', 'color=black:s=320x180:d=0.2',
             '-pix_fmt', 'yuv420p', '-c:v', enc.name, ...enc.args, '-f', 'null', '-'],
-          { timeout: 8000 },
+          { timeout: 15000 },
         );
         return enc;
       } catch {
@@ -77,7 +80,10 @@ export function h264Encoder() {
       }
     }
     return null;
-  })();
+  })().then((enc) => {
+    if (!enc) encoderPromise = null; // ask again next time rather than giving up for the whole session
+    return enc;
+  });
   return encoderPromise;
 }
 
