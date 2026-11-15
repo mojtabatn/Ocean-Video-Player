@@ -63,12 +63,12 @@ export const MenuGlyph = (p: P) => (
   </svg>
 );
 
-/** Back to the first view: a window with an arrow pointing left (as in the design). */
+/** Back to the first view: a house, from Streamline Core (CC BY 4.0, see THIRD-PARTY.md), as thin as the icons beside it. */
 export const HomeGlyph = (p: P) => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1" {...p}>
-    <rect x="1.5" y="1.5" width="13" height="13" rx="2.6" />
-    <path d="M1.5 5h13" />
-    <path d="M10.6 9.9H6M7.7 8.2 6 9.9l1.7 1.7" strokeLinecap="round" strokeLinejoin="round" />
+  <svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M0.5 8.5L7 2L13.5 8.5" />
+    <path d="M2.5 6.5V13.5H11.5V6.5" />
+    <path d="M8.25 8.75C8.25 9.44036 7.69036 10 7 10C6.30964 10 5.75 9.44036 5.75 8.75C5.75 8.05964 6.30964 7.5 7 7.5C7.69036 7.5 8.25 8.05964 8.25 8.75Z" />
   </svg>
 );
 
