@@ -13,8 +13,9 @@ export const CHANGELOG: Release[] = [
     date: '2026-11-15',
     items: [
       { kind: 'new', text: 'Ocean for Mac — for Apple Silicon and Intel Macs, with hardware video conversion and the Mac menu bar.' },
-      { kind: 'new', text: 'A Settings button in the top bar, next to the menu.' },
+      { kind: 'new', text: 'A Settings button in the top bar, next to the menu, and a new home icon.' },
       { kind: 'improved', text: 'Settings are arranged in tabs — Account, Playback, Audio, Subtitles, Online playback and About.' },
+      { kind: 'fixed', text: 'Converting a video on the fly no longer gives up when FFmpeg is slow to start the first time.' },
       { kind: 'fixed', text: 'Help shows the version you actually have.' },
     ],
   },
