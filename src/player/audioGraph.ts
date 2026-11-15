@@ -85,6 +85,12 @@ export class AudioGraph {
     }
   }
 
+  /** Sends the sound to one of the system's audio outputs ('' = the system default). */
+  async setOutput(deviceId: string) {
+    const ctx = this.ctx as AudioContext & { setSinkId?: (id: string) => Promise<void> };
+    if (ctx.setSinkId) await ctx.setSinkId(deviceId === 'default' ? '' : deviceId);
+  }
+
   get isNormalizing() {
     return this.normalizing;
   }

@@ -29,6 +29,8 @@ export type Settings = {
   subtitleStyle: SubtitleStyle;
   secondarySubtitleStyle: SubtitleStyle;
   preferredAudioLanguage: string;
+  /** Audio output device id ('' = system default). */
+  audioOutputId: string;
   preferredSubtitleLanguage: string;
   openSubtitlesApiKey: string;
   subtitleLanguages: string;
@@ -70,6 +72,7 @@ export const DEFAULT_SETTINGS: Settings = {
   subtitleStyle: DEFAULT_SUB_STYLE,
   secondarySubtitleStyle: { ...DEFAULT_SUB_STYLE, size: 34, color: '#ffe680', position: 88 },
   preferredAudioLanguage: '',
+  audioOutputId: '',
   preferredSubtitleLanguage: 'fa',
   openSubtitlesApiKey: '',
   subtitleLanguages: 'fa,en',

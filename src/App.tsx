@@ -151,6 +151,36 @@ export default function App() {
     osdTimer.current = window.setTimeout(() => setOsd(null), 1400);
   }, []);
 
+  // ---------- audio output device ----------
+  const [audioOutputs, setAudioOutputs] = useState<MediaDeviceInfo[]>([]);
+  useEffect(() => {
+    const md = navigator.mediaDevices;
+    if (!md?.enumerateDevices) return;
+    const refresh = () =>
+      md.enumerateDevices().then((all) =>
+        // 'default' and 'communications' are aliases Windows adds for real devices; "System default" covers them.
+        setAudioOutputs(all.filter((d) => d.kind === 'audiooutput' && d.deviceId !== 'default' && d.deviceId !== 'communications')),
+      ).catch(() => {});
+    refresh();
+    md.addEventListener('devicechange', refresh);
+    return () => md.removeEventListener('devicechange', refresh);
+  }, []);
+  // Apply the saved device; when it is unplugged the sound goes back to the system default (and returns with it).
+  useEffect(() => {
+    const id = settings.audioOutputId;
+    const present = !id || audioOutputs.some((d) => d.deviceId === id);
+    player.setAudioOutput(present ? id : '');
+  }, [settings.audioOutputId, audioOutputs, player]);
+  const chooseAudioOutput = useCallback(
+    async (deviceId: string, label: string) => {
+      updateSettings({ audioOutputId: deviceId });
+      const ok = await player.setAudioOutput(deviceId);
+      if (ok) flash(`Sound: ${label}`);
+      else notify('warning', 'There is a Problem', `Couldn’t switch the sound to ${label}`);
+    },
+    [player, updateSettings, flash, notify],
+  );
+
   // ---------- one-time setup ----------
   useEffect(() => {
     const host = videoHost.current!;
@@ -852,7 +882,21 @@ export default function App() {
 
   const audioMenu = (): MenuEntry[] => {
     const tracks = snap.info?.audio ?? [];
+    const current = audioOutputs.some((d) => d.deviceId === settings.audioOutputId) ? settings.audioOutputId : '';
     return [
+      {
+        label: 'Output device',
+        submenu: (): MenuEntry[] => [
+          { label: 'System default', checked: current === '', onSelect: () => chooseAudioOutput('', 'System default') },
+          ...(audioOutputs.length ? [{ type: 'divider' } as MenuEntry] : []),
+          ...audioOutputs.map((d, i) => ({
+            label: d.label || `Output ${i + 1}`,
+            checked: current === d.deviceId,
+            onSelect: () => chooseAudioOutput(d.deviceId, d.label || `Output ${i + 1}`),
+          })),
+        ],
+      },
+      { type: 'divider' },
       ...(tracks.length
         ? tracks.map((a) => ({
             label: [a.language?.toUpperCase(), a.title, `${a.codec.toUpperCase()} ${a.channels}ch`].filter(Boolean).join(' · '),

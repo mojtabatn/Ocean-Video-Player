@@ -158,6 +158,21 @@ export class Player {
     return this.ensureAudio();
   }
 
+  /** Audio output device ('' = system default). Falls back to the default when the device is gone. */
+  async setAudioOutput(deviceId: string) {
+    const graph = this.ensureAudio();
+    const v = this.video as HTMLVideoElement & { setSinkId?: (id: string) => Promise<void> };
+    try {
+      if (graph) await graph.setOutput(deviceId);
+      else if (v.setSinkId) await v.setSinkId(deviceId);
+      return true;
+    } catch {
+      if (graph) await graph.setOutput('').catch(() => {});
+      else await v.setSinkId?.('').catch(() => {});
+      return false;
+    }
+  }
+
   // ---------- loading ----------
   async load(input: string, opts: { title?: string; startAt?: number; autoplay?: boolean; audioLanguage?: string } = {}) {
     const token = ++this.loadToken;
