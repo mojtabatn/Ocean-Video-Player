@@ -182,11 +182,33 @@ export function OnlinePickerDialog(p: Props) {
                     <button className={`picker__q ${selected?.url === s.url ? 'is-on' : ''}`} onClick={() => setSelected(s)}>
                       <span className="picker__radio" />
                       <span className="picker__qlabel">{s.label}</span>
-                      <span className="picker__qsize">{sizeOf(s.url)}</span>
+                      <span className="picker__qsize">
+                        {(() => {
+                          const z = sizeOf(s.url);
+                          if (z.state === 'loading') return <span className="picker__qspin" aria-label="Loading size" />;
+                          return z.state === 'known' ? z.text : '—';
+                        })()}
+                      </span>
                     </button>
                   </li>
                 ))}
             </ul>
+            {(() => {
+              // Sizes come from the download server itself: when none of them could be read, that server is not answering.
+              const shownNow = sources.filter((s) => s.group === group);
+              const states = shownNow.map((s) => sizeOf(s.url).state);
+              if (!states.length || !states.every((st) => st === 'unknown')) return null;
+              return (
+                <div className="picker__note" role="note">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden>
+                    <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1.6" />
+                    <path d="M10 9v5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                    <circle cx="10" cy="6.2" r="1.1" fill="currentColor" />
+                  </svg>
+                  The site’s download server isn’t available for older files right now, so sizes can’t be shown and playback may not start.
+                </div>
+              );
+            })()}
           </>
         )}
         {d && !sources.length && <div className="picker__error">No playable links for this episode.</div>}

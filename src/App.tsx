@@ -1050,7 +1050,7 @@ export default function App() {
         .filter((s) => s.group === g)
         .map((s) => ({
           label: s.label,
-          hint: sizeOf(s.url),
+          hint: ((z) => (z.state === 'known' ? z.text : z.state === 'loading' ? '…' : '—'))(sizeOf(s.url)),
           checked: s.url === online.source.url,
           onSelect: () => switchSource(s),
         })),
