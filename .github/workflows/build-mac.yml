@@ -70,17 +70,7 @@ jobs:
             echo "No Rosetta on this runner; the Intel build is not started here."
             exit 0
           fi
-          mkdir -p smoke
-          codesign -dv "$app" 2>&1 | head -5
-          # First a plain start (logs + a picture of the whole screen), then the scripted check.
-          ELECTRON_ENABLE_LOGGING=1 OCEAN_USER_DATA="$PWD/smoke/profile0" "$app/Contents/MacOS/Ocean Player" > smoke/plain.log 2>&1 &
-          pid=$!
-          sleep 20
-          screencapture -x smoke/screen.png || true
-          kill $pid 2>/dev/null || true
-          sleep 2
-          kill -9 $pid 2>/dev/null || true
-          echo "--- plain start log ---"; head -60 smoke/plain.log
+          codesign -dv "$app" 2>&1 | grep -E 'Signature|Format'
           node tests/mac-smoke.cjs "$app" "vendor/ffmpeg/darwin-${{ matrix.arch }}/ffmpeg" smoke
       - uses: actions/upload-artifact@v4
         if: always()
