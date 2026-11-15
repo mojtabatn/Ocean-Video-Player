@@ -13,6 +13,8 @@ export const CHANGELOG: Release[] = [
     date: '2026-11-15',
     items: [
       { kind: 'new', text: 'Ocean for Mac — for Apple Silicon and Intel Macs, with hardware video conversion and the Mac menu bar.' },
+      { kind: 'new', text: 'A Settings button in the top bar, next to the menu.' },
+      { kind: 'improved', text: 'Settings are arranged in tabs — Account, Playback, Audio, Subtitles, Online playback and About.' },
       { kind: 'fixed', text: 'Help shows the version you actually have.' },
     ],
   },

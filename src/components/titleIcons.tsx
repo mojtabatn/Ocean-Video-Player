@@ -71,3 +71,15 @@ export const HomeGlyph = (p: P) => (
     <path d="M10.6 9.9H6M7.7 8.2 6 9.9l1.7 1.7" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
+
+/** Settings: a gear in the same rounded frame as the menu and back icons. */
+export const SettingsGlyph = (p: P) => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1" {...p}>
+    <rect x="1.5" y="1.5" width="13" height="13" rx="2.6" />
+    <path
+      d="M6.71 5.02 7.02 3.61 8.98 3.61 9.29 5.02 9.94 5.39 11.31 4.95 12.29 6.65 11.23 7.63 11.23 8.37 12.29 9.35 11.31 11.05 9.94 10.61 9.29 10.98 8.98 12.39 7.02 12.39 6.71 10.98 6.06 10.61 4.69 11.05 3.71 9.35 4.77 8.37 4.77 7.63 3.71 6.65 4.69 4.95 6.06 5.39Z"
+      strokeLinejoin="round"
+    />
+    <circle cx="8" cy="8" r="1.4" />
+  </svg>
+);

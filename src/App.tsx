@@ -6,7 +6,7 @@ import { HelpDialog } from './components/dialogs/HelpDialog';
 import { MediaInfoDialog } from './components/dialogs/MediaInfoDialog';
 import { OnlinePickerDialog } from './components/dialogs/OnlinePickerDialog';
 import { OpenUrlDialog } from './components/dialogs/OpenUrlDialog';
-import { SettingsDialog } from './components/dialogs/SettingsDialog';
+import { SettingsDialog, showSettingsTab, type SettingsTab } from './components/dialogs/SettingsDialog';
 import { ShortcutsDialog } from './components/dialogs/ShortcutsDialog';
 import { SubtitleSearchDialog } from './components/dialogs/SubtitleSearchDialog';
 import { SubtitleSettingsDialog } from './components/dialogs/SubtitleSettingsDialog';
@@ -153,6 +153,11 @@ export default function App() {
   }, []);
 
   // ---------- "What's new" after an update ----------
+  /** Settings, on a given tab or (without one) on the tab used last. */
+  const openSettings = useCallback((tab?: SettingsTab) => {
+    if (tab) showSettingsTab(tab);
+    setDialog('settings');
+  }, []);
   const [whatsNew, setWhatsNew] = useState<{ since: string | null; from: 'start' | 'settings' }>({ since: null, from: 'settings' });
   useEffect(() => {
     ocean?.appVersion().then((v) => {
@@ -877,7 +882,7 @@ export default function App() {
   useEffect(() => {
     const off = ocean?.onMenuAction((id) => {
       if (id === 'checkUpdates') {
-        setDialog('settings');
+        openSettings('about');
         void checkUpdates();
       } else if (ACTIONS.some((a) => a.id === id)) {
         run(id as ActionId);
@@ -1187,6 +1192,7 @@ export default function App() {
             setMenu(menu && !menu.items ? null : { x: 16, y: r.bottom + 6 });
           }}
           onHome={goHome}
+          onSettings={() => openSettings()}
           onToggleFullscreen={toggleFullscreen}
         />
       )}
@@ -1220,7 +1226,7 @@ export default function App() {
         }}
       >
         <div ref={videoHost} className="stage__host" hidden={isHome} />
-        {isHome && <Home onPick={pickOnline} onResume={resumeOnline} onOpenFile={openDialog} onOpenSettings={() => setDialog('settings')} />}
+        {isHome && <Home onPick={pickOnline} onResume={resumeOnline} onOpenFile={openDialog} onOpenSettings={() => openSettings('account')} />}
 
         {!isHome && (
           <>
@@ -1368,7 +1374,7 @@ export default function App() {
           apiKey={settings.openSubtitlesApiKey}
           languages={settings.subtitleLanguages}
           onLoaded={(bytes, label) => loadSubtitleBytes(bytes, label)}
-          onOpenSettings={() => setDialog('settings')}
+          onOpenSettings={() => openSettings('subtitles')}
           onClose={() => setDialog(null)}
         />
       )}

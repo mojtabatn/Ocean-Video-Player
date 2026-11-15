@@ -3159,3 +3159,124 @@ kbd {
 .titlebar--mac .titlebar__controls {
   padding-right: 6px;
 }
+
+/* Settings: sections as tabs at the left, the chosen one at the right (fixed height, so switching does not jump). */
+.dialog--settings .dialog__head {
+  border-bottom: 1px solid var(--menu-border);
+}
+
+.dialog--settings .dialog__body {
+  display: flex;
+  padding: 0;
+  overflow: hidden;
+}
+
+.settings {
+  display: flex;
+  width: 100%;
+  height: min(520px, calc(100vh - 150px));
+}
+
+.settings__nav {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 200px;
+  padding: 12px 10px;
+  border-right: 1px solid var(--menu-border);
+  background: #1e1e1e;
+}
+
+.settings__tab {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #9d9d9d;
+  text-align: left;
+  transition: background-color 0.12s, color 0.12s;
+}
+
+.settings__tab svg {
+  flex: none;
+}
+
+.settings__tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e2e2;
+}
+
+.settings__tab.is-active {
+  background: rgba(21, 138, 255, 0.14);
+  color: #fff;
+}
+
+.settings__tab.is-active svg {
+  color: var(--accent-bright);
+}
+
+.settings__dot {
+  margin-left: auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-bright);
+}
+
+.settings__dot--warn {
+  background: #e0a030;
+}
+
+.settings__pane {
+  flex: 1;
+  min-width: 0;
+  padding: 18px 24px 22px;
+  overflow-y: auto;
+  font-size: 14px;
+  color: var(--text-muted);
+  scrollbar-width: thin;
+  scrollbar-color: #444 transparent;
+  animation: fade-in 0.15s ease-out;
+}
+
+.settings__head {
+  margin-bottom: 12px;
+}
+
+.settings__title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.settings__about {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #777;
+}
+
+.settings__pane .account-card {
+  margin-top: 4px;
+}
+
+.settings__pane .row {
+  min-height: 46px;
+  padding: 7px 0;
+}
+
+.settings__pane .row + .row {
+  border-top: 1px solid #2d2d2d;
+}
+
+.settings__pane .section-title {
+  margin: 18px 0 2px;
+}
+
+.settings__pane .settings__head + .section-title {
+  margin-top: 6px;
+}

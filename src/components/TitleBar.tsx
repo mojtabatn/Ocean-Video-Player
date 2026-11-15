@@ -1,7 +1,7 @@
 import logo from '../assets/logo.svg';
 import { isMac } from '../lib/actions';
 import { ocean } from '../lib/bridge';
-import { CloseIcon, ExitFullscreenIcon, FullscreenIcon, HomeGlyph, MaximizeIcon, MenuGlyph, MinimizeIcon, RestoreIcon } from './titleIcons';
+import { CloseIcon, ExitFullscreenIcon, FullscreenIcon, HomeGlyph, MaximizeIcon, MenuGlyph, MinimizeIcon, RestoreIcon, SettingsGlyph } from './titleIcons';
 
 type Props = {
   title: string;
@@ -11,15 +11,16 @@ type Props = {
   canGoHome: boolean;
   onMenuClick: (e: React.MouseEvent) => void;
   onHome: () => void;
+  onSettings: () => void;
   onToggleFullscreen: () => void;
 };
 
 /**
- * Ocean's own title bar (Figma "App Preview"): brand, | , menu, back to the first view — title — minimize,
+ * Ocean's own title bar (Figma "App Preview"): brand, | , menu, back to the first view, settings — title — minimize,
  * maximize/restore, fullscreen (hides this bar and the progress bar; it reappears while the mouse moves) and close.
  * On a Mac the window keeps its own traffic-light buttons at the left, so only the fullscreen button stays here.
  */
-export function TitleBar({ title, maximized, fullscreen, menuOpen, canGoHome, onMenuClick, onHome, onToggleFullscreen }: Props) {
+export function TitleBar({ title, maximized, fullscreen, menuOpen, canGoHome, onMenuClick, onHome, onSettings, onToggleFullscreen }: Props) {
   return (
     <header
       className={`titlebar ${fullscreen ? 'titlebar--overlay' : ''} ${isMac ? 'titlebar--mac' : ''}`}
@@ -42,6 +43,9 @@ export function TitleBar({ title, maximized, fullscreen, menuOpen, canGoHome, on
         </button>
         <button className="tb" aria-label="Back to start" title="Back to start" disabled={!canGoHome} onClick={onHome} onDoubleClick={(e) => e.stopPropagation()}>
           <HomeGlyph />
+        </button>
+        <button className="tb" aria-label="Settings" title="Settings" onClick={onSettings} onDoubleClick={(e) => e.stopPropagation()}>
+          <SettingsGlyph />
         </button>
       </div>
 

@@ -9,6 +9,7 @@ export function Dialog({
   width = 420,
   modal = true,
   footer,
+  className = '',
 }: {
   title: string;
   onClose: () => void;
@@ -17,6 +18,8 @@ export function Dialog({
   /** Non-modal dialogs float at the right so the video stays visible while adjusting. */
   modal?: boolean;
   footer?: ReactNode;
+  /** Extra class on the dialog box, for dialogs with their own layout. */
+  className?: string;
 }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -32,7 +35,7 @@ export function Dialog({
   return createPortal(
     <div className={`dialog-layer ${modal ? 'dialog-layer--modal' : ''}`} onMouseDown={modal ? onClose : undefined}>
       <section
-        className={`dialog ${modal ? '' : 'dialog--floating'}`}
+        className={`dialog ${modal ? '' : 'dialog--floating'} ${className}`}
         style={{ width }}
         role="dialog"
         aria-label={title}

@@ -80,7 +80,8 @@ Ocean tries to do both: a clean, dark, minimal interface and a real playback eng
 <img src="docs/screenshots/menu.jpg" alt="Main menu with the subtitles submenu" width="760" />
 </div>
 
-- Custom **frameless title bar**: menu, back-to-start, minimize, maximize, fullscreen, close.
+- Custom **frameless title bar**: menu, back-to-start, settings, minimize, maximize, fullscreen, close.
+- **Settings in tabs**: Account, Playback, Audio, Subtitles, Online playback and About.
 - **Immersive fullscreen** — top bar and control bar hide completely and float back while you move the mouse.
 - Right-click menu with everything: playback, video, audio, subtitles.
 - **Customizable keyboard shortcuts** and remembered volume.
@@ -100,7 +101,7 @@ Ocean can show what is trending on **Film2Media** and play it straight from the 
 <img src="docs/screenshots/home-trending.jpg" alt="Trending Now on the first screen" width="860" />
 </div>
 
-1. Open **Settings › Film2Media account** and sign in once (or create an account). You sign in on the site's own page — **Ocean never sees your password**.
+1. Open **Settings › Account** and sign in once (or create an account). You sign in on the site's own page — **Ocean never sees your password**.
 2. The first screen fills with **Trending Now**, read live from the site's homepage slider and refreshed every 30 minutes. Hover a poster for its name and IMDb rating.
 3. **Search** the whole site archive (movies *and* series) from the box next to the title. Results replace the trending row.
 4. Click a title to open the picker: **season → episode → version (Persian dub / hard-sub) → quality**, with the real **file size** of each option, the **IMDb score** and a **Bookmark** button. The lowest quality is preselected so playback starts fast.
@@ -127,9 +128,9 @@ Ocean can show what is trending on **Film2Media** and play it straight from the 
 > **Note** — Ocean is an independent project and is **not affiliated with Film2Media**. Online playback needs an account on that site, and what you watch is subject to its terms. If the site changes its layout, the online part of Ocean may need an update.
 
 <div align="center">
-<img src="docs/screenshots/settings-top.jpg" alt="Settings with the Film2Media account card" width="380" />
+<img src="docs/screenshots/settings-account.jpg" alt="Settings: the Account tab with the Film2Media sign-in" width="420" />
 &nbsp;
-<img src="docs/screenshots/settings-about.jpg" alt="Settings: cache, About, updates, what's new" width="380" />
+<img src="docs/screenshots/settings-online.jpg" alt="Settings: the Online playback tab with the cache" width="420" />
 </div>
 
 ## Install
@@ -161,7 +162,7 @@ Requirements: macOS 12 or later. Video conversion uses the Mac's own hardware en
 
 ## Keyboard shortcuts
 
-All of these can be changed in **Settings › Shortcuts** (`Ctrl+/`). On a Mac, use `⌘` for `Ctrl` and `⌥` for `Alt`.
+All of these can be changed in the **Keyboard shortcuts** window (`Ctrl+/`, or Menu › Shortcuts). On a Mac, use `⌘` for `Ctrl` and `⌥` for `Alt`.
 
 | Action | Keys | Action | Keys |
 |---|---|---|---|
@@ -272,7 +273,7 @@ xattr -dr com.apple.quarantine "/Applications/Ocean Player.app"
 
 ### پخش آنلاین
 
-از **Settings ← Film2Media account** یک بار وارد شو (یا ثبت‌نام کن). ورود در صفحه‌ی خود سایت انجام می‌شود و Ocean رمز عبور تو را نمی‌بیند. بعد از ورود، اسلایدر صفحه‌ی اول پر می‌شود.
+از **Settings ← Account** یک بار وارد شو (یا ثبت‌نام کن). ورود در صفحه‌ی خود سایت انجام می‌شود و Ocean رمز عبور تو را نمی‌بیند. بعد از ورود، اسلایدر صفحه‌ی اول پر می‌شود.
 
 > Ocean پروژه‌ای مستقل است و **وابسته به Film2Media نیست**. پخش آنلاین به حساب کاربری آن سایت نیاز دارد و محتوا تابع قوانین همان سایت است.
 
