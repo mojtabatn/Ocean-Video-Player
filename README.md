@@ -70,7 +70,7 @@ Ocean tries to do both: a clean, dark, minimal interface and a real playback eng
 
 ### Audio & video
 
-- Audio track switching, audio delay (positive and negative), **volume boost up to 200%**, **10-band equalizer** with presets, **volume normalization**.
+- Audio track switching, audio delay (positive and negative), **volume boost up to 200%**, **10-band equalizer** with presets, **volume normalization**, and a choice of **output device** (speakers, headphones, HDMI…).
 - Aspect ratio (16:9, 4:3, 2.35:1, fill, stretch), zoom, rotate, flip, brightness / contrast / saturation / hue.
 - Full-resolution **screenshots** (`Ctrl+E`), **mini player**, **picture-in-picture**, **always on top**, **media info** dialog.
 
@@ -84,10 +84,12 @@ Ocean tries to do both: a clean, dark, minimal interface and a real playback eng
 - **Immersive fullscreen** — top bar and control bar hide completely and float back while you move the mouse.
 - Right-click menu with everything: playback, video, audio, subtitles.
 - **Customizable keyboard shortcuts** and remembered volume.
-- **Automatic updates** from GitHub Releases with a small "update available" card.
+- **Automatic updates** from GitHub Releases with a small "update available" card; the new version installs in place and starts by itself. A **What's new** window then lists what changed since the version you had.
 
 <div align="center">
 <img src="docs/screenshots/update.jpg" alt="Update available message" width="760" />
+<br /><br />
+<img src="docs/screenshots/whats-new.jpg" alt="What's new window after an update" width="760" />
 </div>
 
 ## Online playback
@@ -101,11 +103,15 @@ Ocean can show what is trending on **Film2Media** and play it straight from the 
 1. Open **Settings › Film2Media account** and sign in once (or create an account). You sign in on the site's own page — **Ocean never sees your password**.
 2. The first screen fills with **Trending Now**, read live from the site's homepage slider and refreshed every 30 minutes. Hover a poster for its name and IMDb rating.
 3. **Search** the whole site archive (movies *and* series) from the box next to the title. Results replace the trending row.
-4. Click a title to open the picker: **season → episode → version (Persian dub / hard-sub) → quality**, with the real **file size** of each option. The lowest quality is preselected so playback starts fast.
+4. Click a title to open the picker: **season → episode → version (Persian dub / hard-sub) → quality**, with the real **file size** of each option, the **IMDb score** and a **Bookmark** button. The lowest quality is preselected so playback starts fast.
 5. Press **▶ Play**. Switch quality or episode any time from the bar at the bottom; position is kept.
+6. **Bookmarks** — the bookmark button on a poster (or in the picker) keeps a title in the *Bookmarks* tab, so you don't have to search for it again.
+7. **Recently Watched** — everything you played online, with a progress bar and the episode you were on. Click one to continue where you stopped.
 
 <div align="center">
-<img src="docs/screenshots/picker.jpg" alt="Choosing episode and quality" width="760" />
+<img src="docs/screenshots/picker.jpg" alt="Choosing episode and quality, with IMDb score and bookmark" width="760" />
+<br /><br />
+<img src="docs/screenshots/home-history.jpg" alt="Recently Watched with progress bars" width="760" />
 </div>
 
 <details>
@@ -121,9 +127,9 @@ Ocean can show what is trending on **Film2Media** and play it straight from the 
 > **Note** — Ocean is an independent project and is **not affiliated with Film2Media**. Online playback needs an account on that site, and what you watch is subject to its terms. If the site changes its layout, the online part of Ocean may need an update.
 
 <div align="center">
-<img src="docs/screenshots/settings-top.jpg" alt="Settings with the Film2Media account card" width="420" />
+<img src="docs/screenshots/settings-top.jpg" alt="Settings with the Film2Media account card" width="380" />
 &nbsp;
-<img src="docs/screenshots/settings-about.jpg" alt="Settings: About, updates, what's new" width="420" />
+<img src="docs/screenshots/settings-about.jpg" alt="Settings: cache, About, updates, what's new" width="380" />
 </div>
 
 ## Install
@@ -146,6 +152,10 @@ Requirements: Windows 10 or 11, 64-bit. A GPU with hardware HEVC decoding makes 
    ```
 
 Requirements: macOS 12 or later. Video conversion uses the Mac's own hardware encoder (VideoToolbox).
+
+<div align="center">
+<img src="docs/screenshots/mac.jpg" alt="Ocean Player on macOS" width="640" />
+</div>
 
 **Updates:** Ocean checks GitHub when it starts (and every 6 hours). When a newer release exists, a card appears at the bottom right — **Download & Install** does the rest (on Windows the installer runs silently; on a Mac the app in Applications is replaced and restarted). You can switch this off or check manually in **Settings › About**.
 
@@ -240,10 +250,12 @@ Made by **[Mojtaba Navade](https://t.me/mojtabatn)** · [Telegram](https://t.me/
 - **پخش تقریباً همه‌ی فرمت‌ها:** MP4، MKV، AVI، HEVC، H.264 ده‌بیتی، صدای AC3 و DTS و بیشتر. هر فایل را بهترین و سبک‌ترین راه ممکن پخش می‌کند (مستقیم، تغییر ظرف، یا تبدیل در لحظه با کارت گرافیک).
 - **زیرنویس فارسی در اولویت:** نمایش درست راست‌به‌چپ، تشخیص خودکار انکودینگ‌های قدیمی (Windows-1256)، انتخاب فونت (وزیرمتن، استعداد، میم)، رنگ جدا برای نام مترجم و آدرس سایت، تنظیم زمان، زیرنویس دوم همزمان و ذخیره به‌صورت SRT.
 - **پخش آنلاین:** ردیف «Trending Now» در صفحه‌ی اول. روی پوستر کلیک کن، فصل و قسمت و نسخه (دوبله یا زیرنویس چسبیده) و کیفیت را با حجم هر فایل انتخاب کن و تماشا کن. جستجو در کل آرشیو سایت هم دارد.
+- **بوکمارک و آخرین بازدیدها:** فیلم و سریال‌ها را بوکمارک کن تا دوباره دنبالشان نگردی. تب «Recently Watched» هم هرچه دیده‌ای را با نوار پیشرفت نشان می‌دهد و با یک کلیک از همان‌جا ادامه می‌دهد.
 - **کش هوشمند:** فیلم‌های آنلاین تکه‌تکه روی دیسک ذخیره می‌شوند. برگشتن به قسمت‌های دیده‌شده بدون اینترنت و فوری است. پوشه و حجم کش در تنظیمات قابل تغییر است.
 - **ابزارهای دقیق:** پخش فریم‌به‌فریم، تکرار A-B، سرعت ۰٫۲۵ تا ۴ برابر، اکولایزر، تقویت صدا تا ۲۰۰٪، پیش‌نمایش تصویر روی نوار پخش، اسکرین‌شات، Mini player و PiP.
 - **تمام‌صفحه‌ی بدون مزاحم:** نوار بالا و پایین کاملاً پنهان می‌شوند و با حرکت موس برمی‌گردند.
-- **آپدیت خودکار** از همین GitHub.
+- **آپدیت خودکار** از همین GitHub، بدون مراحل نصب، با پنجره‌ی «What's new» بعد از هر آپدیت.
+- **نسخه‌ی مک** برای مک‌های Apple Silicon و اینتل.
 
 ### نصب
 
