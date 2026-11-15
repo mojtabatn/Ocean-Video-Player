@@ -102,7 +102,7 @@ crossopts=()
   # Only our own .pc files: nothing from Homebrew may end up linked into the binaries.
   PKG_CONFIG_LIBDIR="$prefix/lib/pkgconfig" ./configure \
     --prefix="$prefix" \
-    --arch="$cpu" --target-os=darwin --cc="clang -arch $cpu" --cxx="clang++ -arch $cpu" "${crossopts[@]}" \
+    --arch="$cpu" --target-os=darwin --cc="clang -arch $cpu" --cxx="clang++ -arch $cpu" ${crossopts[@]+"${crossopts[@]}"} \
     --extra-cflags="-mmacosx-version-min=$MIN_MACOS" \
     --extra-ldflags="-mmacosx-version-min=$MIN_MACOS" \
     --pkg-config-flags=--static \
