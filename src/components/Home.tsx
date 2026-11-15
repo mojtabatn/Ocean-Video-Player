@@ -18,6 +18,12 @@ const TAB_ICONS = {
       <path d="M5 3h10a.8.8 0 0 1 .8.8v13a.5.5 0 0 1-.8.4L10 13.5l-5 3.7a.5.5 0 0 1-.8-.4v-13A.8.8 0 0 1 5 3Z" />
     </svg>
   ),
+  search: (
+    <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+      <circle cx="9" cy="9" r="6" />
+      <path d="m13.5 13.5 4 4" />
+    </svg>
+  ),
   history: (
     <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <circle cx="10" cy="10" r="7.2" />
@@ -177,6 +183,8 @@ export function Home({ onPick, onResume, onOpenFile, onOpenSettings }: Props) {
 
   const marks = tab === 'bookmarks';
   const hist = tab === 'history';
+  // While the whole site is being searched only the results matter: the other tabs step aside until the box is cleared.
+  const siteSearch = tab === 'trending' && query.trim().length >= 2;
   const skeleton = tab === 'trending' && (shown === null || shown.length === 0) && !(results && !searching);
   const noResults = marks ? savedShown.length === 0 : hist ? historyShown.length === 0 : !!results && results.length === 0 && !searching;
 
@@ -205,30 +213,34 @@ export function Home({ onPick, onResume, onOpenFile, onOpenSettings }: Props) {
             {/* Wide: tabs side by side. Narrow (container query): one title that opens a small menu. */}
             <div className="home__tabs" role="tablist">
               <button role="tab" aria-selected={tab === 'trending'} className={`home__tab ${tab === 'trending' ? 'is-active' : ''}`} onClick={() => setTab('trending')}>
-                {TAB_ICONS.trending}
-                {tab === 'trending' && (results || searching) ? `Results for “${query.trim()}”` : 'Trending Now'}
+                {siteSearch ? TAB_ICONS.search : TAB_ICONS.trending}
+                {siteSearch ? `Results for “${query.trim()}”` : 'Trending Now'}
               </button>
-              <button role="tab" aria-selected={marks} className={`home__tab ${marks ? 'is-active' : ''}`} onClick={() => setTab('bookmarks')}>
-                {TAB_ICONS.bookmarks}
-                Bookmarks{bookmarks.length ? <span className="home__count">{bookmarks.length}</span> : null}
-              </button>
-              <button role="tab" aria-selected={hist} className={`home__tab ${hist ? 'is-active' : ''}`} onClick={() => setTab('history')}>
-                {TAB_ICONS.history}
-                Recently Watched
-              </button>
+              {!siteSearch && (
+                <button role="tab" aria-selected={marks} className={`home__tab ${marks ? 'is-active' : ''}`} onClick={() => setTab('bookmarks')}>
+                  {TAB_ICONS.bookmarks}
+                  Bookmarks{bookmarks.length ? <span className="home__count">{bookmarks.length}</span> : null}
+                </button>
+              )}
+              {!siteSearch && (
+                <button role="tab" aria-selected={hist} className={`home__tab ${hist ? 'is-active' : ''}`} onClick={() => setTab('history')}>
+                  {TAB_ICONS.history}
+                  Recently Watched
+                </button>
+              )}
             </div>
             <div className="home__switch" onPointerDown={(e) => e.stopPropagation()}>
-              <button className="home__tab is-active home__switch-btn" aria-haspopup="menu" aria-expanded={menuOpen} onClick={() => setMenuOpen((o) => !o)}>
-                {marks ? TAB_ICONS.bookmarks : hist ? TAB_ICONS.history : TAB_ICONS.trending}
+              <button className="home__tab is-active home__switch-btn" aria-haspopup="menu" aria-expanded={menuOpen} disabled={siteSearch} onClick={() => setMenuOpen((o) => !o)}>
+                {marks ? TAB_ICONS.bookmarks : hist ? TAB_ICONS.history : siteSearch ? TAB_ICONS.search : TAB_ICONS.trending}
                 <span className="home__switch-label">
-                  {marks ? 'Bookmarks' : hist ? 'Recently Watched' : results || searching ? `Results for “${query.trim()}”` : 'Trending Now'}
+                  {marks ? 'Bookmarks' : hist ? 'Recently Watched' : siteSearch ? `Results for “${query.trim()}”` : 'Trending Now'}
                 </span>
                 {marks && bookmarks.length ? <span className="home__count">{bookmarks.length}</span> : null}
-                <svg width="12" height="8" viewBox="0 0 12 8" fill="none" aria-hidden>
+                {!siteSearch && <svg width="12" height="8" viewBox="0 0 12 8" fill="none" aria-hidden>
                   <path d="M1 1.5l5 5 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                </svg>}
               </button>
-              {menuOpen && (
+              {menuOpen && !siteSearch && (
                 <div className="home__switch-menu" role="menu">
                   <button role="menuitem" className={tab === 'trending' ? 'is-active' : ''} onClick={() => { setTab('trending'); setMenuOpen(false); }}>
                     {TAB_ICONS.trending}
