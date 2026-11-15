@@ -50,7 +50,8 @@ async function devtoolsUp(ms) {
   };
 
   try {
-    if (!(await devtoolsUp(60000))) {
+    // Generous: an Intel build on an Apple Silicon runner first waits for Rosetta to translate all of Electron.
+    if (!(await devtoolsUp(180000))) {
       throw new Error(`DevTools port never answered${exited ? ` (app exited: ${exited})` : ''}`);
     }
     const browser = await chromium.connectOverCDP(`http://127.0.0.1:${PORT}`);

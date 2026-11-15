@@ -67,6 +67,9 @@ jobs:
 
       # Starts the packaged app and plays a file that needs on-the-fly conversion (FFmpeg + VideoToolbox).
       - name: Smoke test
+        # The Intel build runs under Rosetta here, not on an Intel Mac: a failure there is reported but does not
+        # hold back its disk image.
+        continue-on-error: ${{ matrix.arch == 'x64' }}
         run: |
           npm i --no-save playwright-core@1.63.0
           app="release/mac-arm64/Ocean Player.app"
