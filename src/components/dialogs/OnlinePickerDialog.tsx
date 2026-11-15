@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { compareSources, GROUP_LABEL, pickSource, type OnlineDetails, type OnlineSource, type OnlineTitle, type SourcePref } from '../../../shared/media';
 import { ocean } from '../../lib/bridge';
+import { toggleBookmark, useBookmarks } from '../../lib/bookmarks';
 import { useSizes } from '../../lib/sizes';
 import { Button, Dialog } from '../ui';
 
@@ -44,6 +45,22 @@ export function OnlinePickerDialog(p: Props) {
   const group = selected?.group ?? groups[0];
   const seasons = d ? [...new Set(d.episodes.map((e) => e.season))] : [];
   const season = d?.episodes[episode]?.season ?? seasons[0];
+  // IMDb score: the site's own, else the OMDb lookup (cached, same as the home posters).
+  const siteScore = d?.title.imdb ?? p.title.imdb;
+  const [omdb, setOmdb] = useState<string | null>(null);
+  useEffect(() => {
+    setOmdb(null);
+    if (siteScore || !ocean) return;
+    let live = true;
+    ocean.imdbRatings([p.title]).then((r) => live && setOmdb(r[p.title.id] ?? null)).catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [p.title, siteScore]);
+  const score = siteScore ?? omdb;
+  const bookmarks = useBookmarks();
+  const marked = bookmarks.some((b) => b.id === p.title.id);
+
   const poster = p.title.poster ? (ocean ? `ocean-img://i/?u=${encodeURIComponent(p.title.poster)}` : p.title.poster) : '';
 
   return (
@@ -65,10 +82,26 @@ export function OnlinePickerDialog(p: Props) {
           {poster && <img className="picker__poster" src={poster} alt="" />}
           <div className="picker__info">
             <div className="picker__title" dir="auto">{p.title.title}</div>
-            <div className="picker__meta">
-              {[p.title.kind === 'series' ? 'Series' : 'Movie', p.title.year, (d?.title.imdb ?? p.title.imdb) && `IMDb ${d?.title.imdb ?? p.title.imdb}`].filter(Boolean).join(' · ')}
+            <div className="picker__meta">{[p.title.kind === 'series' ? 'Series' : 'Movie', p.title.year].filter(Boolean).join(' · ')}</div>
+            <div className="picker__actions">
+              {score && (
+                <span className="picker__imdb" title="IMDb rating">
+                  <span className="imdb">IMDb</span>
+                  <span className="picker__score">{score}</span>
+                  <span className="picker__of">/10</span>
+                </span>
+              )}
+              <button
+                className={`picker__mark ${marked ? 'is-on' : ''}`}
+                aria-pressed={marked}
+                onClick={() => toggleBookmark(p.title)}
+              >
+                <svg width="14" height="16" viewBox="0 0 16 18" aria-hidden>
+                  <path d="M2.5 1.75h11a.75.75 0 0 1 .75.75v13.6a.5.5 0 0 1-.8.4L8 12.4l-5.45 4.1a.5.5 0 0 1-.8-.4V2.5a.75.75 0 0 1 .75-.75Z" fill={marked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+                </svg>
+                {marked ? 'Bookmarked' : 'Bookmark'}
+              </button>
             </div>
-            {p.title.persianTitle && <div className="picker__fa" dir="rtl">{p.title.persianTitle}</div>}
           </div>
         </div>
 

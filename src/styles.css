@@ -2817,3 +2817,61 @@ kbd {
   text-decoration: underline;
 }
 .home__switch-btn:disabled { opacity: 1; cursor: default; }
+
+/* Picker: IMDb score + bookmark under the title */
+.picker__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.picker__imdb {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 12px 0 8px;
+  border-radius: 8px;
+  background: #2a2a2a;
+}
+
+.picker__imdb .imdb {
+  font-size: 13px;
+  padding: 2px 5px;
+}
+
+.picker__score {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.picker__of {
+  margin-left: -4px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.picker__mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px 0 12px;
+  border-radius: 8px;
+  background: #2a2a2a;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e6e6e6;
+  transition: background 0.15s, color 0.15s;
+}
+
+.picker__mark:hover {
+  background: #333;
+}
+
+.picker__mark.is-on {
+  color: #1fa5ff;
+  background: rgba(31, 165, 255, 0.14);
+}
