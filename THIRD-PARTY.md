@@ -7,5 +7,6 @@
   Apple VideoToolbox/AudioToolbox) with **dav1d** (BSD 2-clause, https://code.videolan.org/videolan/dav1d) linked in.
   The LGPL text is shipped next to the binaries.
 - **Manrope** (UI) and **Vazirmatn** (subtitles) via Fontsource — SIL Open Font License.
+- **Settings icon** (title bar): “Interface Setting Cog” from Streamline Core, https://www.streamlinehq.com — CC BY 4.0.
 - **OMDb API** — IMDb ratings, https://www.omdbapi.com
 - Online catalogue and links are read from Film2Media (tejaratban.top); Ocean is not affiliated with it.
