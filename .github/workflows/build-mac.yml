@@ -56,6 +56,7 @@ jobs:
           "$d/ffmpeg" -hide_banner -encoders | grep -E 'videotoolbox|aac'
           "$d/ffmpeg" -hide_banner -decoders | grep -E 'libdav1d|hevc'
           "$d/ffmpeg" -hide_banner -protocols | grep -w https
+          "$d/ffmpeg" -hide_banner -devices | grep -w lavfi
 
       - run: npx electron-builder --mac --${{ matrix.arch }} --publish never
 
@@ -63,7 +64,8 @@ jobs:
       - name: Smoke test
         run: |
           npm i --no-save playwright-core@1.55.0
-          app=$(ls -d release/mac*/"Ocean Player.app" | head -1)
+          app="release/mac-arm64/Ocean Player.app"
+          [ "${{ matrix.arch }}" = x64 ] && app="release/mac/Ocean Player.app"
           if [ "${{ matrix.arch }}" = x64 ] && ! arch -x86_64 /usr/bin/true 2>/dev/null; then
             echo "No Rosetta on this runner; the Intel build is not started here."
             exit 0

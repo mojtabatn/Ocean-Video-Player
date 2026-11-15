@@ -4,7 +4,8 @@
 #   - VideoToolbox: hardware H.264/HEVC encoding for on-the-fly conversion, hardware decoding
 #   - AudioToolbox, Secure Transport (https), zlib/bzip2/iconv from macOS itself
 #   - dav1d (BSD) for AV1, built here and linked statically
-# The binaries are self-contained: they only link to libraries every Mac has.
+# The binaries are self-contained: they only link to libraries every Mac has. No capture devices, except lavfi
+# (generated test input; Ocean uses it to find a working H.264 encoder).
 #
 # Usage: scripts/build-ffmpeg-mac.sh [arm64|x64]     (default: this Mac's architecture; the other one cross-compiles)
 # Needs: Xcode command line tools, nasm, pkg-config, meson, ninja  (brew install nasm pkgconf meson ninja)
@@ -112,7 +113,7 @@ crossopts=()
     --enable-videotoolbox --enable-audiotoolbox --enable-securetransport \
     --enable-zlib --enable-bzlib --enable-iconv \
     --enable-libdav1d \
-    --disable-indevs --disable-outdevs
+    --disable-indevs --enable-indev=lavfi --disable-outdevs
   make -j"$jobs"
   make install
 )

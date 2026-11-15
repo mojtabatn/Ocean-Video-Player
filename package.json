@@ -58,13 +58,7 @@
     },
     "mac": {
       "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "arm64",
-            "x64"
-          ]
-        }
+        "dmg"
       ],
       "icon": "build/icon.png",
       "category": "public.app-category.video",
