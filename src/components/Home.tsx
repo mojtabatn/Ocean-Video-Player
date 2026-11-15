@@ -154,8 +154,12 @@ export function Home({ onPick, onResume, onOpenFile, onOpenSettings }: Props) {
   const dragEnd = () => {
     const d = drag.current;
     const el = rail.current;
+    // Only a drag that started on the rail ends here. A press that began elsewhere (e.g. the bookmark button,
+    // which keeps its pointerdown to itself) must not reuse the previous drag's state and swallow its click.
+    const wasDragging = d.active && d.moved;
     d.active = false;
-    if (!d.moved || !el) return;
+    d.moved = false;
+    if (!wasDragging || !el) return;
     d.suppressClick = true;
     window.setTimeout(() => (d.suppressClick = false), 50);
     const step = CARD + GAP;
