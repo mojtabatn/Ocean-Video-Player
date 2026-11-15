@@ -2913,3 +2913,235 @@ kbd {
   margin-top: 1px;
   color: #ffd21e;
 }
+
+/* ---------- What's new (after an update) ---------- */
+.wn {
+  display: flex;
+  flex-direction: column;
+  width: 560px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 64px);
+  overflow: hidden;
+  border: 1px solid #343434;
+  border-radius: 16px;
+  background: #1a1a1a;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  pointer-events: auto;
+  animation: wn-in 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+@keyframes wn-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+
+.wn__hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 28px 26px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0d1b33 0%, #10162a 55%, #1d1236 100%);
+  border-bottom: 1px solid #2a2f3f;
+}
+
+.wn__glow {
+  position: absolute;
+  inset: -60% -10% auto auto;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(31, 165, 255, 0.45), rgba(124, 58, 237, 0.18) 55%, transparent 70%);
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+.wn__logo {
+  position: relative;
+  width: 58px;
+  height: auto;
+  filter: drop-shadow(0 6px 18px rgba(31, 165, 255, 0.45));
+}
+
+.wn__heading {
+  position: relative;
+  flex: 1;
+}
+
+.wn__kicker {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6ec3ff;
+}
+
+.wn__title {
+  margin: 4px 0 10px;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+
+.wn__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wn__pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(31, 165, 255, 0.22);
+  border: 1px solid rgba(31, 165, 255, 0.45);
+}
+
+.wn__date {
+  font-size: 12px;
+  color: #9aa3b5;
+}
+
+.wn__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: #d6dbe6;
+}
+
+.wn__close:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.wn__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #444 transparent;
+  padding: 8px 28px 6px;
+}
+
+.wn__release + .wn__release {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #2b2b2b;
+}
+
+.wn__rhead {
+  margin: 14px 0 2px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #7d7d7d;
+}
+
+.wn__group {
+  margin: 16px 0 6px;
+}
+
+.wn__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.wn__group--new .wn__label {
+  color: #4cb8ff;
+  background: rgba(31, 165, 255, 0.14);
+}
+
+.wn__group--improved .wn__label {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.13);
+}
+
+.wn__group--fixed .wn__label {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.13);
+}
+
+.wn__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wn__list li {
+  position: relative;
+  padding: 5px 0 5px 18px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #dcdcdc;
+}
+
+.wn__list li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 13px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4a4a4a;
+}
+
+.wn__group--new .wn__list li::before {
+  background: #1fa5ff;
+}
+
+.wn__group--improved .wn__list li::before {
+  background: #34d399;
+}
+
+.wn__group--fixed .wn__list li::before {
+  background: #fbbf24;
+}
+
+.wn__remote p {
+  margin: 10px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #dcdcdc;
+}
+
+.wn__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px 20px;
+  border-top: 1px solid #2b2b2b;
+}
+
+.wn__link {
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4cb8ff;
+}
+
+.wn__link:hover {
+  text-decoration: underline;
+}
+
+.wn__ok {
+  min-width: 110px;
+}

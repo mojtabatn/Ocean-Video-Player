@@ -21,6 +21,7 @@ import { eventToKey, keymap, keysFor, prettyKey, type ActionId } from './lib/act
 import { ocean } from './lib/bridge';
 import { formatTime } from './lib/format';
 import { addRecent, clearRecent, getPosition, getRecent, savePosition, tagRecent } from './lib/library';
+import { whatsNewOnStart } from './lib/changelog';
 import { isFinished, recordHistory, type HistoryItem } from './lib/history';
 import { useSettings } from './lib/settings';
 import { useSizes } from './lib/sizes';
@@ -149,6 +150,17 @@ export default function App() {
     setOsd(msg);
     window.clearTimeout(osdTimer.current);
     osdTimer.current = window.setTimeout(() => setOsd(null), 1400);
+  }, []);
+
+  // ---------- "What's new" after an update ----------
+  const [whatsNew, setWhatsNew] = useState<{ since: string | null; from: 'start' | 'settings' }>({ since: null, from: 'settings' });
+  useEffect(() => {
+    ocean?.appVersion().then((v) => {
+      const r = whatsNewOnStart(v);
+      if (!r.show) return;
+      setWhatsNew({ since: r.since, from: 'start' });
+      window.setTimeout(() => setDialog((d) => d ?? 'whatsNew'), 700);
+    });
   }, []);
 
   // ---------- audio output device ----------
@@ -1320,8 +1332,8 @@ export default function App() {
       )}
       {dialog === 'videoAdjust' && <VideoAdjustDialog value={adjust} onChange={setAdjust} onClose={() => setDialog(null)} />}
       {dialog === 'mediaInfo' && snap.info && <MediaInfoDialog info={snap.info} plan={snap.plan} onClose={() => setDialog(null)} />}
-      {dialog === 'settings' && <SettingsDialog settings={settings} onChange={updateSettings} onClose={() => setDialog(null)} updates={updates} onWhatsNew={() => setDialog('whatsNew')} />}
-      {dialog === 'whatsNew' && <WhatsNewDialog onClose={() => setDialog('settings')} />}
+      {dialog === 'settings' && <SettingsDialog settings={settings} onChange={updateSettings} onClose={() => setDialog(null)} updates={updates} onWhatsNew={() => { setWhatsNew({ since: null, from: 'settings' }); setDialog('whatsNew'); }} />}
+      {dialog === 'whatsNew' && <WhatsNewDialog since={whatsNew.since} afterUpdate={whatsNew.from === 'start'} onClose={() => setDialog(whatsNew.from === 'settings' ? 'settings' : null)} />}
       {dialog === 'shortcuts' && (
         <ShortcutsDialog overrides={settings.shortcuts} onChange={(shortcuts) => updateSettings({ shortcuts })} onClose={() => setDialog(null)} />
       )}
