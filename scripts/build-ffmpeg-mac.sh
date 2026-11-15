@@ -105,6 +105,7 @@ crossopts=()
     --arch="$cpu" --target-os=darwin --cc="clang -arch $cpu" --cxx="clang++ -arch $cpu" ${crossopts[@]+"${crossopts[@]}"} \
     --extra-cflags="-mmacosx-version-min=$MIN_MACOS" \
     --extra-ldflags="-mmacosx-version-min=$MIN_MACOS" \
+    --extra-libs=-liconv \
     --pkg-config-flags=--static \
     --disable-debug --disable-doc --disable-ffplay \
     --disable-autodetect \

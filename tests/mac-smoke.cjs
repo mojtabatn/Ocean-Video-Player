@@ -1,5 +1,5 @@
 // Smoke test of the packaged macOS app, run by the CI on a Mac: starts it, checks the window and the Mac title bar,
-// then plays one file that must be converted on the fly (MPEG-4 Part 2 in AVI → FFmpeg + VideoToolbox).
+// then plays one file that must be converted on the fly (MPEG-4 Part 2 + AC3 in AVI → FFmpeg + VideoToolbox).
 // Usage: node tests/mac-smoke.cjs "<path to Ocean Player.app>" <ffmpeg> <out-dir>
 // Needs playwright-core (npm i --no-save playwright-core).
 const { _electron } = require('playwright-core');
@@ -14,7 +14,7 @@ fs.mkdirSync(outDir, { recursive: true });
 const video = path.join(outDir, 'smoke.avi');
 execFileSync(ffmpeg, ['-hide_banner', '-loglevel', 'error', '-y',
   '-f', 'lavfi', '-i', 'testsrc2=d=20:s=1280x720:r=25', '-f', 'lavfi', '-i', 'sine=f=440:d=20',
-  '-c:v', 'mpeg4', '-q:v', '4', '-c:a', 'mp3', video]);
+  '-c:v', 'mpeg4', '-q:v', '4', '-c:a', 'ac3', video]);
 
 (async () => {
   const exe = path.join(appPath, 'Contents/MacOS', path.basename(appPath, '.app'));
