@@ -17,7 +17,7 @@ import { Menu, type MenuEntry } from './components/Menu';
 import { Playlist, type PlaylistItem, type RepeatMode } from './components/Playlist';
 import { SubtitleOverlay } from './components/SubtitleOverlay';
 import { TitleBar } from './components/TitleBar';
-import { eventToKey, keymap, keysFor, prettyKey, type ActionId } from './lib/actions';
+import { ACTIONS, eventToKey, keymap, keysFor, prettyKey, type ActionId } from './lib/actions';
 import { ocean } from './lib/bridge';
 import { formatTime } from './lib/format';
 import { addRecent, clearRecent, getPosition, getRecent, savePosition, tagRecent } from './lib/library';
@@ -871,6 +871,20 @@ export default function App() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [keys, run, dialog, picker]);
+
+  // macOS menu bar → the same actions ("Check for Updates…" opens Settings, where the update status is shown).
+  const checkUpdates = updates.check;
+  useEffect(() => {
+    const off = ocean?.onMenuAction((id) => {
+      if (id === 'checkUpdates') {
+        setDialog('settings');
+        void checkUpdates();
+      } else if (ACTIONS.some((a) => a.id === id)) {
+        run(id as ActionId);
+      }
+    });
+    return () => void off?.();
+  }, [run, checkUpdates]);
 
   const hint = (id: ActionId) => {
     const k = keysFor(id, settings.shortcuts)[0];

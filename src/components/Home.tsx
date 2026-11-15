@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { OnlineTitle } from '../../shared/media';
 import logo from '../assets/logo.svg';
 import { useAccount } from '../lib/account';
+import { MOD } from '../lib/actions';
 import { ocean } from '../lib/bridge';
 import { toggleBookmark, useBookmarks } from '../lib/bookmarks';
 import { isFinished, removeHistory, useHistory, type HistoryItem } from '../lib/history';
@@ -191,7 +192,7 @@ export function Home({ onPick, onResume, onOpenFile, onOpenSettings }: Props) {
   return (
     <div className="home">
       <div className="home__hero">
-        <button className="home__logo" onClick={onOpenFile} title="Open a file (Ctrl + O)">
+        <button className="home__logo" onClick={onOpenFile} title={`Open a file (${MOD} O)`}>
           <img src={logo} width={74} height={80} alt="Ocean" />
         </button>
         <h1 className="home__welcome">Welcome to OCEAN!</h1>

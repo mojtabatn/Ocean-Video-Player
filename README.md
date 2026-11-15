@@ -4,12 +4,15 @@
 
 # Ocean Player
 
-**A new style of video player for Windows.**
+**A new style of video player for Windows and macOS.**
 Plays almost anything, looks the way a modern player should, and lets you pick and watch trending movies and series online.
 
 <a href="https://github.com/mojtabatn/ocean-video-player/releases/latest/download/Ocean-Player-Setup.exe"><img src="https://img.shields.io/badge/Download%20Windows%20Version-0A84FF?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows Version" height="46" /></a>
 
-<sub>Always the latest installer · Windows 10/11, 64-bit</sub>
+<a href="https://github.com/mojtabatn/ocean-video-player/releases/latest/download/Ocean-Player-mac-arm64.dmg"><img src="https://img.shields.io/badge/Download%20for%20Mac%20(Apple%20Silicon)-1C1C1E?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Mac (Apple Silicon)" height="38" /></a>
+<a href="https://github.com/mojtabatn/ocean-video-player/releases/latest/download/Ocean-Player-mac-x64.dmg"><img src="https://img.shields.io/badge/Download%20for%20Mac%20(Intel)-1C1C1E?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Mac (Intel)" height="38" /></a>
+
+<sub>Always the latest version · Windows 10/11, 64-bit · macOS 12 or later (Apple Silicon: M1 and newer)</sub>
 
 [All releases](https://github.com/mojtabatn/Ocean-video-player/releases/latest) · [Features](#features) · [Online playback](#online-playback) · [Shortcuts](#keyboard-shortcuts) · [Build from source](#build-from-source) · [فارسی](#فارسی)
 
@@ -43,7 +46,7 @@ Ocean tries to do both: a clean, dark, minimal interface and a real playback eng
 |---|---|
 | **Formats** | MP4, M4V, MKV, WebM, MOV, AVI, WMV, FLV, TS/M2TS, MPG/VOB, 3GP, OGV, RMVB and audio files (MP3, FLAC, AAC, Opus, WAV, MKA…) |
 | **Codecs** | H.264 (8 and 10-bit), HEVC, AV1, VP9, MPEG-4/Xvid, MPEG-2, VC-1 · AAC, MP3, Opus, FLAC, **AC3, E-AC3, DTS, TrueHD** |
-| **Smart engine** | Every file is probed with FFmpeg and played the cheapest way that works: **direct** (no cost) → **remux** (repackaged, video untouched, audio converted if needed) → **transcode** (on-the-fly H.264, GPU encoders NVENC / QSV / AMF first) |
+| **Smart engine** | Every file is probed with FFmpeg and played the cheapest way that works: **direct** (no cost) → **remux** (repackaged, video untouched, audio converted if needed) → **transcode** (on-the-fly H.264, GPU encoders first: NVENC / QSV / AMF on Windows, VideoToolbox on a Mac) |
 | **Seeking** | Frame-accurate, including inside remuxed and converted streams |
 | **Playlist** | Folder auto-playlist, queue panel, shuffle, repeat one/all, previous/next |
 | **Resume** | Remembers where you stopped in every file |
@@ -125,17 +128,30 @@ Ocean can show what is trending on **Film2Media** and play it straight from the 
 
 ## Install
 
+### Windows
+
 1. Open the [**latest release**](https://github.com/mojtabatn/Ocean-video-player/releases/latest).
 2. Download **`Ocean-Player-Setup.exe`** and run it (installer, creates a Start-menu entry and file associations).
 3. Windows SmartScreen may warn because the app is not code-signed: choose **More info → Run anyway**.
 
 Requirements: Windows 10 or 11, 64-bit. A GPU with hardware HEVC decoding makes 4K HEVC files effortless; otherwise they are converted on the fly.
 
-**Updates:** Ocean checks GitHub when it starts (and every 6 hours). When a newer release exists, a card appears at the bottom right — **Download & Install** does the rest. You can switch this off or check manually in **Settings › About**.
+### macOS
+
+1. Download the disk image for your Mac: **`Ocean-Player-mac-arm64.dmg`** for Apple Silicon (M1 and newer) or **`Ocean-Player-mac-x64.dmg`** for Intel ( › About This Mac shows which one you have).
+2. Open it and drag **Ocean Player** onto **Applications**.
+3. The app is not notarized by Apple, so the first start is blocked: open it once, then go to **System Settings › Privacy & Security** and click **Open Anyway** (on macOS 14 and older, right-click the app › **Open** also works). If macOS says the app "is damaged", run this once in Terminal:
+   ```bash
+   xattr -dr com.apple.quarantine "/Applications/Ocean Player.app"
+   ```
+
+Requirements: macOS 12 or later. Video conversion uses the Mac's own hardware encoder (VideoToolbox).
+
+**Updates:** Ocean checks GitHub when it starts (and every 6 hours). When a newer release exists, a card appears at the bottom right — **Download & Install** does the rest (on Windows the installer runs silently; on a Mac the app in Applications is replaced and restarted). You can switch this off or check manually in **Settings › About**.
 
 ## Keyboard shortcuts
 
-All of these can be changed in **Settings › Shortcuts** (`Ctrl+/`).
+All of these can be changed in **Settings › Shortcuts** (`Ctrl+/`). On a Mac, use `⌘` for `Ctrl` and `⌥` for `Alt`.
 
 | Action | Keys | Action | Keys |
 |---|---|---|---|
@@ -156,7 +172,7 @@ All of these can be changed in **Settings › Shortcuts** (`Ctrl+/`).
 
 ## Build from source
 
-Needs Node.js 22+. FFmpeg is not stored in the repository: `ffmpeg` and `ffprobe` from your PATH are used in development, and a Windows LGPL build is downloaded for releases.
+Needs Node.js 22+. FFmpeg is not stored in the repository: `ffmpeg` and `ffprobe` from your PATH are used in development; releases bundle an LGPL build (downloaded for Windows, compiled from source for macOS).
 
 ```bash
 git clone https://github.com/mojtabatn/Ocean-video-player.git
@@ -173,6 +189,13 @@ Package for Windows (installer):
 npm run dist         # builds, downloads FFmpeg (vendor/ffmpeg/win32-x64), runs electron-builder
 ```
 
+Package for macOS (on a Mac with the Xcode command line tools; FFmpeg is compiled once, a few minutes):
+
+```bash
+brew install nasm pkgconf meson ninja
+npm run dist:mac     # disk image for this Mac's processor in release/
+```
+
 Optional pieces (none are required to build):
 
 | What | How |
@@ -183,7 +206,7 @@ Optional pieces (none are required to build):
 
 ### Releases
 
-Push a tag such as `v0.2.0` (or publish a GitHub Release with that tag). The **Build Windows** workflow builds the installer on a Windows runner and attaches it to the release. Keep `version` in `package.json` equal to the tag — the in-app updater compares them. Add an `OMDB_KEY` repository secret to enable ratings in release builds.
+Push a tag such as `v0.2.0` (or publish a GitHub Release with that tag). The **Build Windows** workflow builds the installer on a Windows runner and **Build macOS** builds both disk images on a Mac runner; each attaches its files to the release. Keep `version` in `package.json` equal to the tag — the in-app updater compares them. Add an `OMDB_KEY` repository secret to enable ratings in release builds.
 
 ### Project layout
 
@@ -192,7 +215,7 @@ electron/   main process: window, FFmpeg engine (probe, remux, transcode, thumbn
             chunked media cache, site access (online/), updater
 shared/     types used by both sides
 src/        React UI: home, player, menus, dialogs, subtitles, settings
-scripts/    FFmpeg download, Electron bundling
+scripts/    FFmpeg download (Windows) and build (macOS), Electron bundling
 tests/      end-to-end checks that drive the real app (need a folder of sample media)
 ```
 
@@ -200,7 +223,7 @@ Built with **Electron**, **React**, **TypeScript**, **Vite** and **FFmpeg**.
 
 ## Credits & licenses
 
-See [THIRD-PARTY.md](THIRD-PARTY.md). Interface font: Manrope. Subtitle fonts: Vazirmatn, Estedad, Meem (SIL Open Font License). FFmpeg is used under the LGPL.
+See [THIRD-PARTY.md](THIRD-PARTY.md). Interface font: Manrope. Subtitle fonts: Vazirmatn, Estedad, Meem (SIL Open Font License). FFmpeg is used under the LGPL; the macOS build includes dav1d (BSD).
 
 Made by **[Mojtaba Navade](https://t.me/mojtabatn)** · [Telegram](https://t.me/mojtabatn) · [Instagram](https://www.instagram.com/mojtabanavade/)
 
@@ -210,7 +233,7 @@ Made by **[Mojtaba Navade](https://t.me/mojtabatn)** · [Telegram](https://t.me/
 
 <div dir="rtl">
 
-**Ocean** یک ویدیو پلیر مدرن برای ویندوز است: ظاهر تمیز و تیره، و موتور پخش قدرتمند پشت آن.
+**Ocean** یک ویدیو پلیر مدرن برای ویندوز و مک است: ظاهر تمیز و تیره، و موتور پخش قدرتمند پشت آن.
 
 ### امکانات اصلی
 
@@ -224,8 +247,16 @@ Made by **[Mojtaba Navade](https://t.me/mojtabatn)** · [Telegram](https://t.me/
 
 ### نصب
 
+**ویندوز:**
+
 1. از صفحه‌ی [**Releases**](https://github.com/mojtabatn/Ocean-video-player/releases/latest) فایل `Ocean-Player-Setup.exe` را دانلود و اجرا کن.
 2. اگر ویندوز هشدار SmartScreen داد (چون برنامه امضای دیجیتال ندارد): **More info ← Run anyway**.
+
+**مک:** فایل `Ocean-Player-mac-arm64.dmg` (مک‌های M1 به بعد) یا `Ocean-Player-mac-x64.dmg` (مک‌های اینتل) را دانلود کن، بازش کن و Ocean Player را داخل Applications بکش. چون برنامه توسط اپل تأیید (notarize) نشده، بار اول اجرا نمی‌شود: یک بار بازش کن، بعد از **System Settings ← Privacy & Security** گزینه‌ی **Open Anyway** را بزن. اگر پیغام «damaged» آمد، این دستور را یک بار در Terminal اجرا کن:
+
+```bash
+xattr -dr com.apple.quarantine "/Applications/Ocean Player.app"
+```
 
 ### پخش آنلاین
 

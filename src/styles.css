@@ -3145,3 +3145,17 @@ kbd {
 .wn__ok {
   min-width: 110px;
 }
+
+/* macOS: the window's own traffic-light buttons sit at the left (from x 14, about 68 px wide); the brand follows
+   them. In fullscreen macOS hides them, so the bar goes back to the normal inset. */
+.titlebar--mac .titlebar__brand {
+  padding-left: 84px;
+}
+
+.titlebar--mac.titlebar--overlay .titlebar__brand {
+  padding-left: 18px;
+}
+
+.titlebar--mac .titlebar__controls {
+  padding-right: 6px;
+}

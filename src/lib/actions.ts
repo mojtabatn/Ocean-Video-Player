@@ -67,6 +67,8 @@ const NAMED: Record<string, string> = { ' ': 'Space', '+': '=' };
 export function eventToKey(e: KeyboardEvent): string | null {
   if (['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) return null;
   let key = NAMED[e.key] ?? e.key;
+  // Option on a Mac types a different character (Option+0 → "º"); the shortcut means the physical key.
+  if (e.altKey && /^(Key[A-Z]|Digit[0-9])$/.test(e.code)) key = e.code.slice(e.code.startsWith('Key') ? 3 : 5);
   if (key.length === 1) key = key.toUpperCase();
   // Shifted symbols ("<", "{") would otherwise depend on keyboard layout; use the physical key.
   if (e.shiftKey && key.length === 1 && !/[A-Z0-9]/.test(key) && e.code.startsWith('Digit')) key = e.code.slice(5);
@@ -84,6 +86,20 @@ export function keysFor(id: ActionId, overrides: Record<string, string[]>) {
   return overrides[id] ?? ACTIONS.find((a) => a.id === id)?.keys ?? [];
 }
 
+/** On a Mac, Cmd does what Ctrl does elsewhere (eventToKey treats both as "Ctrl"), so shortcuts are shown as ⌘. */
+export const isMac = (window.ocean?.platform ?? (/Mac/.test(navigator.platform) ? 'darwin' : '')) === 'darwin';
+
+/** The key that goes with letter shortcuts: "Ctrl" or "⌘". */
+export const MOD = isMac ? '⌘' : 'Ctrl';
+
+const MAC_KEYS: Record<string, string> = { Up: '↑', Down: '↓', Left: '←', Right: '→', Enter: '↩', Backspace: '⌫', Delete: '⌦' };
+
 export function prettyKey(k: string) {
-  return k.replace('Arrow', '').replace('Space', 'Space').replace('Escape', 'Esc');
+  const text = k.replace('Arrow', '').replace('Escape', 'Esc');
+  if (!isMac) return text;
+  const parts = text.split('+');
+  const key = parts.pop() || '+';
+  // Mac order: ⌥ ⇧ ⌘ then the key, written together ("⇧⌘O").
+  const mods = (['Alt', 'Shift', 'Ctrl'] as const).filter((m) => parts.includes(m)).map((m) => ({ Alt: '⌥', Shift: '⇧', Ctrl: '⌘' })[m]);
+  return mods.join('') + (MAC_KEYS[key] ?? key);
 }

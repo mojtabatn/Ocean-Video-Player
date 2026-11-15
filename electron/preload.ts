@@ -7,8 +7,10 @@ import type { AccountStatus } from './online/http';
 export type WindowState = { maximized?: boolean; fullscreen?: boolean };
 
 const api = {
-  platform: process.platform,
+  // OCEAN_PLATFORM lets tests on another system show the Mac layout.
+  platform: (process.env.OCEAN_PLATFORM as NodeJS.Platform | undefined) || process.platform,
   minimize: () => ipcRenderer.send('window:minimize'),
+  titleBarDoubleClick: () => ipcRenderer.send('window:title-double-click'),
   toggleMaximize: () => ipcRenderer.send('window:toggle-maximize'),
   close: () => ipcRenderer.send('window:close'),
   setFullscreen: (value: boolean) => ipcRenderer.send('window:set-fullscreen', value),
@@ -61,6 +63,12 @@ const api = {
     return () => ipcRenderer.removeListener('app:open-file', listener);
   },
   takePendingFile: (): Promise<string | null> => ipcRenderer.invoke('app:take-pending-file'),
+  /** Commands from the macOS menu bar (action ids from src/lib/actions.ts, plus 'checkUpdates'). */
+  onMenuAction: (cb: (id: string) => void) => {
+    const listener = (_e: unknown, id: string) => cb(id);
+    ipcRenderer.on('app:menu-action', listener);
+    return () => ipcRenderer.removeListener('app:menu-action', listener);
+  },
   openVideoDialog: (): Promise<string | null> => ipcRenderer.invoke('dialog:open-video'),
   openSubtitleDialog: (): Promise<string | null> => ipcRenderer.invoke('dialog:open-subtitle'),
   saveSubtitleDialog: (name: string, contents: string): Promise<string | null> =>

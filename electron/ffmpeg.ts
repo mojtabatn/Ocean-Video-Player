@@ -44,7 +44,12 @@ export function spawnFfmpeg(args: string[], extraPipes = 0): ChildProcess {
 export type H264Encoder = { name: string; args: string[] };
 
 // Preference order: GPU encoders first, then software. Each is test-encoded once.
+// macOS: VideoToolbox (every supported Mac has it; -allow_sw covers a busy or missing hardware encoder).
+const MAC_ENCODERS: H264Encoder[] = [
+  { name: 'h264_videotoolbox', args: ['-realtime', '1', '-prio_speed', '1', '-allow_sw', '1', '-b:v', '12M', '-maxrate', '20M'] },
+];
 const ENCODERS: H264Encoder[] = [
+  ...(process.platform === 'darwin' ? MAC_ENCODERS : []),
   { name: 'h264_nvenc', args: ['-preset', 'p2', '-tune', 'll', '-rc', 'vbr', '-cq', '21'] },
   { name: 'h264_qsv', args: ['-preset', 'veryfast', '-global_quality', '22'] },
   { name: 'h264_amf', args: ['-quality', 'speed', '-rc', 'cqp', '-qp_i', '20', '-qp_p', '22'] },

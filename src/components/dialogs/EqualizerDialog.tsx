@@ -1,3 +1,4 @@
+import { MOD } from '../../lib/actions';
 import { EQ_BANDS, EQ_PRESETS } from '../../player/audioGraph';
 import { Button, Dialog, Row, Select, Stepper, Toggle } from '../ui';
 
@@ -26,7 +27,7 @@ export function EqualizerDialog(p: Props) {
       footer={<Button variant="ghost" onClick={() => p.onGains(EQ_PRESETS.Flat, 'Flat')}>Reset EQ</Button>}
     >
       <div className="section-title">Sync</div>
-      <Row label="Audio delay" hint="Ctrl + / Ctrl − while playing">
+      <Row label="Audio delay" hint={`${MOD} + / ${MOD} − while playing`}>
         <Stepper value={p.audioDelay} step={0.1} onChange={p.onAudioDelay} format={(v) => `${v > 0 ? '+' : ''}${v.toFixed(1)} s`} />
       </Row>
       <Row label="Normalize volume" hint="Evens out quiet dialogue and loud scenes">

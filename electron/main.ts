@@ -1,4 +1,5 @@
 import { app, BrowserWindow, dialog, ipcMain, protocol, screen, shell } from 'electron';
+import { installMacMenu, isMac, titleBarDoubleClick } from './mac';
 import { createReadStream, promises as fs } from 'node:fs';
 import path from 'node:path';
 import { Readable } from 'node:stream';
@@ -39,6 +40,19 @@ app.commandLine.appendSwitch('enable-blink-features', 'AudioVideoTracks');
 
 let win: BrowserWindow | null = null;
 let pendingFile: string | null = findFileArg(process.argv);
+
+// macOS hands files over with this event (Finder "Open With", a file dropped on the Dock icon), even before the
+// app is ready; Windows passes them on the command line instead.
+app.on('open-file', (e, file) => {
+  e.preventDefault();
+  if (win && !win.webContents.isLoading()) {
+    if (win.isMinimized()) win.restore();
+    win.focus();
+    win.webContents.send('app:open-file', file);
+  } else {
+    pendingFile = file;
+  }
+});
 
 function findFileArg(argv: string[]): string | null {
   const isUrl = (a: string) => /^(https?|rtmp|rtsp):\/\//i.test(a);
@@ -88,7 +102,8 @@ function createWindow() {
     height: 826,
     minWidth: 640,
     minHeight: 400,
-    frame: false,
+    // Our own title bar everywhere; a Mac keeps its traffic-light buttons, placed on that bar.
+    ...(isMac ? { titleBarStyle: 'hidden' as const, trafficLightPosition: { x: 14, y: 9 } } : { frame: false }),
     backgroundColor: '#000000',
     title: 'Ocean',
     show: false,
@@ -118,6 +133,10 @@ function registerIpc() {
   const current = () => BrowserWindow.getFocusedWindow() ?? win;
 
   ipcMain.on('window:minimize', () => current()?.minimize());
+  ipcMain.on('window:title-double-click', () => {
+    const w = current();
+    if (w) titleBarDoubleClick(w);
+  });
   ipcMain.on('window:toggle-maximize', () => {
     const w = current();
     if (!w) return;
@@ -143,10 +162,12 @@ function registerIpc() {
       w.setMinimumSize(320, 180);
       w.setBounds({ x: area.x + area.width - width - 24, y: area.y + area.height - height - 24, width, height });
       w.setAlwaysOnTop(true, 'floating');
+      if (isMac) w.setWindowButtonVisibility(false); // the mini player has its own small bar
     } else {
       w.setMinimumSize(640, 400);
       if (savedBounds) w.setBounds(savedBounds);
       w.setAlwaysOnTop(false);
+      if (isMac) w.setWindowButtonVisibility(true);
     }
   });
 
@@ -290,6 +311,7 @@ if (!app.requestSingleInstanceLock()) {
     protocol.handle('ocean-img', handleImage);
     forgetOldSiteCookies();
     registerIpc();
+    if (isMac) installMacMenu(() => BrowserWindow.getFocusedWindow() ?? win);
     createWindow();
   });
 

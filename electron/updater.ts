@@ -1,10 +1,12 @@
-// Updates from GitHub Releases: check for a newer version, read release notes, download the Windows installer
-// and run it. No third-party updater: the CI workflow publishes Ocean-Player-Setup.exe on each release.
+// Updates from GitHub Releases: check for a newer version, read release notes, download the installer and run it.
+// No third-party updater: the CI workflows publish Ocean-Player-Setup.exe (Windows) and Ocean-Player-mac-<arch>.dmg
+// (macOS) on each release.
 import { app, net, shell } from 'electron';
-import { spawn } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { execFile, spawn } from 'node:child_process';
+import { constants, existsSync } from 'node:fs';
 import { createWriteStream, promises as fs } from 'node:fs';
 import path from 'node:path';
+import { promisify } from 'node:util';
 import { GITHUB_REPO, type UpdateInfo, type UpdateProgress } from '../shared/app';
 
 const repo = () => process.env.OCEAN_GITHUB_REPO ?? GITHUB_REPO;
@@ -39,8 +41,12 @@ async function getJson<T>(url: string): Promise<T> {
   return (await res.json()) as T;
 }
 
-/** The installer if the release has one, else the portable zip. */
+/** This system's download: the Mac disk image for this processor, or the Windows installer (else the zip). */
 function pickAsset(r: Release) {
+  if (process.platform === 'darwin') {
+    const arch = process.arch === 'arm64' ? 'arm64' : 'x64';
+    return r.assets.find((a) => /\.dmg$/i.test(a.name) && new RegExp(`mac.*${arch}`, 'i').test(a.name));
+  }
   return (
     r.assets.find((a) => /setup.*\.exe$/i.test(a.name)) ??
     r.assets.find((a) => /\.exe$/i.test(a.name)) ??
@@ -128,6 +134,18 @@ export async function downloadAndInstall(onProgress: (p: UpdateProgress) => void
         app.quit(); // runs the normal shutdown (stops ffmpeg so the installer can replace its files)
         setTimeout(() => app.exit(0), 3000);
       }, installed ? 600 : 800);
+    } else if (/\.dmg$/i.test(file)) {
+      // Replace this copy of the app with the one in the disk image and start it again; where that is not possible
+      // (a read-only place, run straight from the disk image) Finder opens the image to drag the app over by hand.
+      const replaced = await stageMacUpdate(file).catch((e: Error) => {
+        console.warn('In-place update failed:', e.message);
+        return false;
+      });
+      if (!replaced) await shell.openPath(file);
+      setTimeout(() => {
+        app.quit();
+        setTimeout(() => app.exit(0), 3000);
+      }, replaced ? 400 : 1500);
     } else {
       shell.showItemInFolder(file);
     }
@@ -138,3 +156,52 @@ export async function downloadAndInstall(onProgress: (p: UpdateProgress) => void
     downloading = false;
   }
 }
+
+const exec = promisify(execFile);
+
+/**
+ * macOS: copies the app out of the downloaded disk image next to the running one, then hands over to a small shell
+ * script that waits for Ocean to quit, swaps the two and starts the new version. Returns false when this copy
+ * cannot be replaced in place.
+ */
+async function stageMacUpdate(dmg: string): Promise<boolean> {
+  const bundle = path.resolve(process.execPath, '../../..'); // …/Ocean Player.app/Contents/MacOS/Ocean Player
+  // Opened from the disk image, or from Downloads before being moved (macOS then runs it from a hidden read-only
+  // copy): there is nothing to replace.
+  if (!bundle.endsWith('.app') || bundle.includes('/AppTranslocation/') || bundle.startsWith('/Volumes/')) return false;
+  const parent = path.dirname(bundle);
+  try {
+    await fs.access(parent, constants.W_OK);
+    await fs.access(bundle, constants.W_OK);
+  } catch {
+    return false;
+  }
+
+  const mount = path.join(path.dirname(dmg), 'mount');
+  await fs.rm(mount, { recursive: true, force: true });
+  await fs.mkdir(mount, { recursive: true });
+  const staged = path.join(parent, `.${path.basename(bundle, '.app')}-update.app`);
+  await exec('hdiutil', ['attach', '-nobrowse', '-noautoopen', '-readonly', '-mountpoint', mount, dmg]);
+  try {
+    const name = (await fs.readdir(mount)).find((n) => n.endsWith('.app'));
+    if (!name) throw new Error('No app in the disk image');
+    await fs.rm(staged, { recursive: true, force: true });
+    await exec('ditto', [path.join(mount, name), staged]); // keeps the bundle exactly as built (signature included)
+  } finally {
+    await exec('hdiutil', ['detach', mount, '-force']).catch(() => {});
+  }
+  spawn('/bin/sh', ['-c', SWAP_SCRIPT, 'ocean-update', String(process.pid), bundle, staged], { detached: true, stdio: 'ignore' }).unref();
+  return true;
+}
+
+// $1 Ocean's pid, $2 the installed app, $3 the new copy. Keeps the old app if the swap fails.
+const SWAP_SCRIPT = `
+pid="$1"; app="$2"; new="$3"; old="$app.old-$$"
+i=0; while kill -0 "$pid" 2>/dev/null && [ $i -lt 300 ]; do sleep 0.2; i=$((i+1)); done
+if mv "$app" "$old"; then
+  if mv "$new" "$app"; then rm -rf "$old"; else mv "$old" "$app"; fi
+fi
+rm -rf "$new"
+xattr -dr com.apple.quarantine "$app" 2>/dev/null
+open "$app"
+`;

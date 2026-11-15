@@ -9,6 +9,14 @@ export type Release = { version: string; date: string; items: { kind: ChangeKind
  */
 export const CHANGELOG: Release[] = [
   {
+    version: '0.1.7',
+    date: '2026-11-15',
+    items: [
+      { kind: 'new', text: 'Ocean for Mac — for Apple Silicon and Intel Macs, with hardware video conversion and the Mac menu bar.' },
+      { kind: 'fixed', text: 'Help shows the version you actually have.' },
+    ],
+  },
+  {
     version: '0.1.6',
     date: '2026-11-15',
     items: [

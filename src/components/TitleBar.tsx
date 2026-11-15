@@ -1,4 +1,5 @@
 import logo from '../assets/logo.svg';
+import { isMac } from '../lib/actions';
 import { ocean } from '../lib/bridge';
 import { CloseIcon, ExitFullscreenIcon, FullscreenIcon, HomeGlyph, MaximizeIcon, MenuGlyph, MinimizeIcon, RestoreIcon } from './titleIcons';
 
@@ -16,10 +17,14 @@ type Props = {
 /**
  * Ocean's own title bar (Figma "App Preview"): brand, | , menu, back to the first view — title — minimize,
  * maximize/restore, fullscreen (hides this bar and the progress bar; it reappears while the mouse moves) and close.
+ * On a Mac the window keeps its own traffic-light buttons at the left, so only the fullscreen button stays here.
  */
 export function TitleBar({ title, maximized, fullscreen, menuOpen, canGoHome, onMenuClick, onHome, onToggleFullscreen }: Props) {
   return (
-    <header className={`titlebar ${fullscreen ? 'titlebar--overlay' : ''}`} onDoubleClick={() => !fullscreen && ocean?.toggleMaximize()}>
+    <header
+      className={`titlebar ${fullscreen ? 'titlebar--overlay' : ''} ${isMac ? 'titlebar--mac' : ''}`}
+      onDoubleClick={() => !fullscreen && ocean?.titleBarDoubleClick()}
+    >
       <div className="titlebar__brand">
         <img className="titlebar__logo" src={logo} width={13} height={14} alt="" draggable={false} />
         <span className="titlebar__name">OCEAN</span>
@@ -45,12 +50,16 @@ export function TitleBar({ title, maximized, fullscreen, menuOpen, canGoHome, on
       </div>
 
       <div className="titlebar__controls" onDoubleClick={(e) => e.stopPropagation()}>
-        <button className="wc" aria-label="Minimize" title="Minimize" onClick={() => ocean?.minimize()}>
-          <MinimizeIcon />
-        </button>
-        <button className="wc" aria-label={maximized ? 'Restore' : 'Maximize'} title={maximized ? 'Restore' : 'Maximize'} onClick={() => ocean?.toggleMaximize()}>
-          {maximized ? <RestoreIcon /> : <MaximizeIcon />}
-        </button>
+        {!isMac && (
+          <>
+            <button className="wc" aria-label="Minimize" title="Minimize" onClick={() => ocean?.minimize()}>
+              <MinimizeIcon />
+            </button>
+            <button className="wc" aria-label={maximized ? 'Restore' : 'Maximize'} title={maximized ? 'Restore' : 'Maximize'} onClick={() => ocean?.toggleMaximize()}>
+              {maximized ? <RestoreIcon /> : <MaximizeIcon />}
+            </button>
+          </>
+        )}
         <button
           className="wc"
           aria-label={fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
@@ -59,9 +68,11 @@ export function TitleBar({ title, maximized, fullscreen, menuOpen, canGoHome, on
         >
           {fullscreen ? <ExitFullscreenIcon /> : <FullscreenIcon />}
         </button>
-        <button className="wc wc--close" aria-label="Close" title="Close" onClick={() => (ocean ? ocean.close() : window.close())}>
-          <CloseIcon />
-        </button>
+        {!isMac && (
+          <button className="wc wc--close" aria-label="Close" title="Close" onClick={() => (ocean ? ocean.close() : window.close())}>
+            <CloseIcon />
+          </button>
+        )}
       </div>
     </header>
   );

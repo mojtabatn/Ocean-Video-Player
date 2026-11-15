@@ -1,11 +1,18 @@
 // Downloads an LGPL FFmpeg build for Windows x64 into vendor/ffmpeg/win32-x64 (bundled by electron-builder).
 // LGPL builds have no libx264; on-the-fly conversion uses the GPU (NVENC / QSV / AMF) or Windows Media Foundation.
 // Pass --gpl for a GPL build (adds libx264; the whole app must then be distributed under GPL terms).
+// On a Mac (or with --mac) it compiles FFmpeg for macOS instead: scripts/build-ffmpeg-mac.sh [arm64|x64].
 import { execFileSync } from 'node:child_process';
 import { createWriteStream, existsSync, mkdirSync, readdirSync, renameSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
+
+if (process.platform === 'darwin' || process.argv.includes('--mac')) {
+  const arch = process.argv.find((a) => a === 'arm64' || a === 'x64') ?? process.arch;
+  execFileSync('bash', [path.resolve('scripts/build-ffmpeg-mac.sh'), arch], { stdio: 'inherit' });
+  process.exit(0);
+}
 
 const flavor = process.argv.includes('--gpl') ? 'gpl' : 'lgpl';
 // "master-latest" is the one asset name BtbN keeps stable across releases.

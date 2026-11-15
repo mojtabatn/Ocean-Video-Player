@@ -1,0 +1,88 @@
+name: Build macOS
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        # Apple Silicon and Intel; both built on an Apple Silicon runner (FFmpeg for Intel is cross-compiled).
+        arch: [arm64, x64]
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # OMDb key (IMDb ratings) comes from a repository secret; it is not stored in the source.
+      - name: Write OMDb key
+        env:
+          OMDB_KEY: ${{ secrets.OMDB_KEY }}
+        run: |
+          if [ -n "$OMDB_KEY" ]; then printf '%s' "$OMDB_KEY" > .omdb-key; fi
+      - run: npm run build
+
+      # FFmpeg is compiled from source (LGPL + VideoToolbox); the result is cached until the build script changes.
+      - name: Cache FFmpeg
+        id: ffmpeg-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor/ffmpeg/darwin-${{ matrix.arch }}
+          key: ffmpeg-darwin-${{ matrix.arch }}-${{ hashFiles('scripts/build-ffmpeg-mac.sh') }}
+      - name: Build FFmpeg
+        if: steps.ffmpeg-cache.outputs.cache-hit != 'true'
+        run: |
+          brew install nasm pkgconf meson ninja
+          bash scripts/build-ffmpeg-mac.sh ${{ matrix.arch }}
+      - name: Check FFmpeg
+        run: |
+          d=vendor/ffmpeg/darwin-${{ matrix.arch }}
+          file "$d/ffmpeg" "$d/ffprobe"
+          otool -L "$d/ffmpeg"
+          if [ "${{ matrix.arch }}" = x64 ] && ! arch -x86_64 /usr/bin/true 2>/dev/null; then
+            echo "No Rosetta on this runner; the Intel binaries are not run here."
+            exit 0
+          fi
+          "$d/ffmpeg" -hide_banner -version | head -1
+          "$d/ffmpeg" -hide_banner -encoders | grep -E 'videotoolbox|aac'
+          "$d/ffmpeg" -hide_banner -decoders | grep -E 'libdav1d|hevc'
+          "$d/ffmpeg" -hide_banner -protocols | grep -w https
+
+      - run: npx electron-builder --mac --${{ matrix.arch }} --publish never
+
+      # Starts the packaged app and plays a file that needs on-the-fly conversion (FFmpeg + VideoToolbox).
+      - name: Smoke test
+        run: |
+          npm i --no-save playwright-core@1.55.0
+          app=$(ls -d release/mac*/"Ocean Player.app" | head -1)
+          if [ "${{ matrix.arch }}" = x64 ] && ! arch -x86_64 /usr/bin/true 2>/dev/null; then
+            echo "No Rosetta on this runner; the Intel build is not started here."
+            exit 0
+          fi
+          node tests/mac-smoke.cjs "$app" "vendor/ffmpeg/darwin-${{ matrix.arch }}/ffmpeg" smoke
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-mac-${{ matrix.arch }}
+          path: smoke/*.png
+          if-no-files-found: ignore
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocean-player-mac-${{ matrix.arch }}
+          path: release/Ocean-Player-mac-${{ matrix.arch }}.dmg
+      # A version tag (v0.2.0 …) adds the disk image to its GitHub Release; Ocean's updater reads it from there.
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/Ocean-Player-mac-${{ matrix.arch }}.dmg
